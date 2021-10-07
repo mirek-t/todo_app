@@ -1,0 +1,23 @@
+{
+  "name": "todo",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "sass ./src/scss/main.scss ./dist/css/main.css --watch"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mirek-t/todo_app.git"
+  },
+  "author": "miroslaw.truminski@gmail.com",
+  "license": "Beerware",
+  "bugs": {
+    "url": "https://github.com/mirek-t/todo_app/issues"
+  },
+  "homepage": "https://github.com/mirek-t/todo_app#readme",
+  "dependencies": {
+    "sass": "^1.42.1"
+  }
+}

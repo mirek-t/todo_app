@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ToDo-App</title>
+    <link rel="stylesheet" href="./dist/css/main.css" />
+  </head>
+  <body>
+    <div class="tasks">
+      <label for="task" class="tasks__lbl">Todos </label>
+      <input type="text" id="task" class="tasks__input" />
+      <ul class="tasks__list">
+        <li class="tasks__item task">
+          <span class="task__status"></span>
+          <span class="task__title">Finish homework</span>
+          <span class="task__remove"></span>
+        </li>
+        <li class="tasks__item">
+          <span class="task__status"></span>
+          <span class="task__title">Make tortilla</span>
+          <span class="task__remove"></span>
+        </li>
+      </ul>
+      <nav class="tasks__filter filter">
+        <span class="tasks__counter" id="counterTasks">2 items left</span>
+        <a class="filter__btn" id="allTasks">All</a>
+        <a class="filter__btn" id="activeTasks">Active</a>
+        <a class="filter__btn" id="completedTasks"></a>Completed
+      </nav>
+    </div>
+  </body>
+</html>
