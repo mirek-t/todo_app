@@ -6,28 +6,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>ToDo-App</title>
     <link rel="stylesheet" href="./dist/css/main.css" />
+    <script src="./src/js/app.js" async defer></script>
   </head>
   <body>
     <div class="tasks">
       <label for="task" class="tasks__lbl">Todos </label>
       <input type="text" id="task" class="tasks__input" />
-      <ul class="tasks__list">
-        <li class="tasks__item task">
-          <span class="task__status"></span>
-          <span class="task__title">Finish homework</span>
-          <span class="task__removeIcon"></span>
-        </li>
-        <li class="tasks__item task">
-          <span class="task__status task__status--completed"></span>
-          <span class="task__title">Make tortilla</span>
-          <span class="task__removeIcon"></span>
-        </li>
-      </ul>
+      <ul class="tasks__list"></ul>
       <nav class="tasks__filter filter">
         <span class="tasks__counter" id="counterTasks">2 items left</span>
         <a class="filter__btn" id="allTasks">All</a>
         <a class="filter__btn" id="activeTasks">Active</a>
-        <a class="filter__btn" id="completedTasks"></a>Completed
+        <a class="filter__btn" id="completedTasks">Completed</a>
       </nav>
     </div>
 
