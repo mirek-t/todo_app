@@ -2,20 +2,32 @@ const inputRef = document.querySelector("#task");
 const taskCloneRef = document.querySelector(".clone");
 const allTaskRef = document.querySelector(".tasks__list");
 
+const howManyTasksLeft = () => {
+  if (counter === 1) {
+    itemsLeft.innerText = counter + " item left";
+  } else {
+    itemsLeft.innerText = counter + " items left";
+  }
+};
+
 const changeStatus = (statusRef) => {
   statusRef.classList.toggle("task__status--completed");
 };
 
 const removeTask = (task) => {
+  counter -= 1;
+
   task.remove();
+  howManyTasksLeft();
 };
+
+const itemsLeft = document.querySelector("#counterTasks");
+let counter = 0;
 
 inputRef.addEventListener("keyup", (evt) => {
   evt.preventDefault();
 
   if (evt.key === "Enter") {
-    console.log(evt.target.value);
-
     const taskClone = taskCloneRef.cloneNode(true);
 
     const taskTitle = taskClone.querySelector(".task__title");
@@ -32,6 +44,9 @@ inputRef.addEventListener("keyup", (evt) => {
     taskClone.classList.remove("clone");
 
     evt.target.value = "";
+
+    counter += 1;
+    howManyTasksLeft();
   }
 });
 

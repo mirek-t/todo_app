@@ -1,7 +1,12 @@
+$font-family: Georgias, sans-serif;
+
 body {
   width: 100%;
   min-height: 100vh;
-  background-color: lightgray;
+  background-color: lightslategray;
+  margin: 0;
+  font-family: $font-family;
+  overflow-x: hidden;
 }
 
 .tasks {
@@ -11,11 +16,28 @@ body {
   align-items: center;
   flex-wrap: nowrap;
   flex-direction: column;
-  //   box-sizing: content-box;
+  position: relative;
+
+  #{&}__lbl {
+    font-size: 30px;
+    text-transform: uppercase;
+    margin: 16px 0 4px 0;
+  }
 
   #{&}__list {
     list-style: none;
     padding-left: 0;
+  }
+
+  #{&}__input {
+    min-width: 40vw;
+    line-height: 2.5;
+    padding: 0 8px;
+    border-radius: 8px;
+    border: none;
+    box-shadow: 1px 1px 1px;
+    outline: none;
+    margin-bottom: 16px;
   }
 }
 
@@ -23,7 +45,17 @@ body {
   display: flex;
   align-items: center;
   cursor: pointer;
-  margin-bottom: 10px;
+  padding: 10px;
+  background-color: whitesmoke;
+  border-bottom: 1px solid gray;
+  border-radius: 16px;
+  margin-bottom: 8px;
+  box-shadow: 1px 1px 1px;
+  justify-content: space-between;
+
+  &:last-child {
+    border-bottom: none;
+  }
 
   #{&}__status {
     border-radius: 50%;
@@ -36,29 +68,58 @@ body {
   }
 
   #{&}__status.task__status--completed {
-    background-color: green;
+    background-color: greenyellow;
   }
 
   #{&}__title {
     margin-right: 10px;
+    max-width: 40vw;
+    overflow: auto;
+    flex-grow: 2;
   }
 
   #{&}__removeIcon {
-    width: 10px;
+    width: 50px;
     height: 10px;
+    margin-left: 8px;
     display: inline-block;
     position: relative;
   }
 
   &:hover .task__removeIcon::after {
-    content: "x";
+    content: "delete";
     font-family: sans-serif;
     position: absolute;
     top: -6px;
     right: 0;
+    color: white;
+    background-color: darkred;
+    padding: 4px 8px;
+    border-radius: 8px;
   }
 }
 
 .hidden {
   display: none;
+}
+
+.filter {
+  padding: 8px;
+  background-color: whitesmoke;
+  width: 100vw;
+  box-sizing: border-box;
+  bottom: 0;
+  display: flex;
+  justify-content: center;
+  font-size: 12px;
+  align-items: center;
+
+  #{&}__btn {
+    cursor: pointer;
+    background-color: lightcoral;
+    padding: 8px;
+    border-radius: 16px;
+    text-transform: uppercase;
+    margin-left: 16px;
+  }
 }
