@@ -121,5 +121,8 @@ body {
     border-radius: 16px;
     text-transform: uppercase;
     margin-left: 16px;
+    &--active {
+      background-color: darkseagreen;
+    }
   }
 }

@@ -1,28 +1,30 @@
 const inputRef = document.querySelector("#task");
 const taskCloneRef = document.querySelector(".clone");
 const allTaskRef = document.querySelector(".tasks__list");
+const counterRef = document.querySelector("#counterTasks");
 
-const howManyTasksLeft = () => {
-  if (counter === 1) {
-    itemsLeft.innerText = counter + " item left";
-  } else {
-    itemsLeft.innerText = counter + " items left";
-  }
+const calculateLeftItems = () => {
+  const notCompleted = allTaskRef.querySelectorAll(
+    ".task__status:not(.task__status--completed)"
+  );
+  counterRef.innerText = `${notCompleted.length} items left`;
+};
+
+const removeFiltersActive = () => {
+  document.querySelectorAll(".filter__btn").forEach((btn) => {
+    btn.classList.remove("filter__btn--active");
+  });
 };
 
 const changeStatus = (statusRef) => {
   statusRef.classList.toggle("task__status--completed");
+  calculateLeftItems();
 };
 
 const removeTask = (task) => {
-  counter -= 1;
-
   task.remove();
-  howManyTasksLeft();
+  calculateLeftItems();
 };
-
-const itemsLeft = document.querySelector("#counterTasks");
-let counter = 0;
 
 inputRef.addEventListener("keyup", (evt) => {
   evt.preventDefault();
@@ -44,17 +46,24 @@ inputRef.addEventListener("keyup", (evt) => {
     taskClone.classList.remove("clone");
 
     evt.target.value = "";
-
-    counter += 1;
-    howManyTasksLeft();
+    calculateLeftItems();
   }
 });
+
+const showAll = () => {
+  const allTasks = allTaskRef.querySelectorAll(".tasks__item");
+  allTasks.forEach((task) => {
+    task.classList.remove("hidden");
+  });
+};
 
 const activeBtn = document.querySelector("#activeTasks");
 activeBtn.addEventListener("click", () => showOnlyActive());
 
 const showOnlyActive = () => {
   showAll();
+  removeFiltersActive();
+  activeBtn.classList.add("filter__btn--active");
   const completedTasks = allTaskRef.querySelectorAll(
     ".task__status--completed"
   );
@@ -66,20 +75,17 @@ const showOnlyActive = () => {
 const allBtn = document.querySelector("#allTasks");
 allBtn.addEventListener("click", () => {
   showAll();
+  removeFiltersActive();
+  allBtn.classList.add("filter__btn--active");
 });
-
-const showAll = () => {
-  const allTasks = allTaskRef.querySelectorAll(".tasks__item");
-  allTasks.forEach((task) => {
-    task.classList.remove("hidden");
-  });
-};
 
 const completedBtn = document.querySelector("#completedTasks");
 completedBtn.addEventListener("click", () => showOnlyCompleted());
 
 const showOnlyCompleted = () => {
   showAll();
+  removeFiltersActive();
+  completedBtn.classList.add("filter__btn--active");
   const notCompleted = allTaskRef.querySelectorAll(
     ".task__status:not(.task__status--completed)"
   );
