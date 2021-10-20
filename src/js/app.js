@@ -1,95 +1,91 @@
-const inputRef = document.querySelector("#task");
-const taskCloneRef = document.querySelector(".clone");
-const allTaskRef = document.querySelector(".tasks__list");
-const counterRef = document.querySelector("#counterTasks");
+import {
+  inputRef,
+  filterBtnRef,
+  allTasksRef,
+  counterRef,
+  taskCloneRef,
+} from "./refs.js";
+import { loadFromLocalStorage, saveToLocalStorage } from "./storage.js";
+import getNextId from "./helpers.js";
+import { addFiltersListener } from "./filters.js";
 
-const calculateLeftItems = () => {
-  const notCompleted = allTaskRef.querySelectorAll(
-    ".task__status:not(.task__status--completed)"
-  );
-  counterRef.innerText = `${notCompleted.length} items left`;
+const state = [];
+
+const createHTMLTask = (task) => {
+  const taskClone = taskCloneRef.cloneNode(true);
+
+  const taskStatus = taskClone.querySelector(".task__status");
+  const taskTitle = taskClone.querySelector(".task__title");
+  const taskRemove = taskClone.querySelector(".task__removeIcon");
+
+  if (task.status === false) {
+    taskStatus.classList.add("task__status--completed");
+  }
+
+  taskStatus.addEventListener("click", () => changeStatus(task.id, state));
+  taskRemove.addEventListener("click", () => removeTask(task.id, state));
+
+  taskTitle.innerText = task.title;
+
+  taskClone.classList.remove("hidden");
+  taskClone.classList.remove("clone");
+
+  return taskClone;
 };
 
-const removeFiltersActive = () => {
-  document.querySelectorAll(".filter__btn").forEach((btn) => {
-    btn.classList.remove("filter__btn--active");
+const reloadAllTasks = (tasks, commit = true) => {
+  allTasksRef.querySelectorAll(".task").forEach((t) => t.remove());
+
+  calculateLeftItems(state);
+  tasks.forEach((task) => {
+    const html = createHTMLTask(task);
+    allTasksRef.appendChild(html);
   });
+
+  if (commit) {
+    saveToLocalStorage(tasks);
+  }
 };
 
-const changeStatus = (statusRef) => {
-  statusRef.classList.toggle("task__status--completed");
-  calculateLeftItems();
+const changeStatus = (id, data) => {
+  data.forEach((task) => {
+    if (task.id === id) {
+      task.status = !task.status;
+    }
+  });
+
+  reloadAllTasks(data);
 };
 
-const removeTask = (task) => {
-  task.remove();
-  calculateLeftItems();
+const removeTask = (id, data) => {
+  const task = data.filter((t) => t.id === id)[0];
+  const task_id = data.indexOf(task);
+  data.splice(task_id, 1);
+
+  reloadAllTasks(data);
 };
+
+function calculateLeftItems(data) {
+  const notCompleted = data.filter((task) => task.status);
+  counterRef.innerText = `${notCompleted.length} items left`;
+}
 
 inputRef.addEventListener("keyup", (evt) => {
   evt.preventDefault();
 
   if (evt.key === "Enter") {
-    const taskClone = taskCloneRef.cloneNode(true);
+    state.push({
+      title: evt.target.value,
+      status: true,
+      id: getNextId(state),
+    });
 
-    const taskTitle = taskClone.querySelector(".task__title");
-    taskTitle.innerText = evt.target.value;
-
-    const taskStatus = taskClone.querySelector(".task__status");
-    taskStatus.addEventListener("click", () => changeStatus(taskStatus));
-
-    const taskRemove = taskClone.querySelector(".task__removeIcon");
-    taskRemove.addEventListener("click", () => removeTask(taskClone));
-
-    allTaskRef.appendChild(taskClone);
-    taskClone.classList.remove("hidden");
-    taskClone.classList.remove("clone");
+    reloadAllTasks(state);
 
     evt.target.value = "";
-    calculateLeftItems();
   }
 });
 
-const showAll = () => {
-  const allTasks = allTaskRef.querySelectorAll(".tasks__item");
-  allTasks.forEach((task) => {
-    task.classList.remove("hidden");
-  });
-};
-
-const activeBtn = document.querySelector("#activeTasks");
-activeBtn.addEventListener("click", () => showOnlyActive());
-
-const showOnlyActive = () => {
-  showAll();
-  removeFiltersActive();
-  activeBtn.classList.add("filter__btn--active");
-  const completedTasks = allTaskRef.querySelectorAll(
-    ".task__status--completed"
-  );
-  completedTasks.forEach((task) => {
-    task.parentElement.classList.add("hidden");
-  });
-};
-
-const allBtn = document.querySelector("#allTasks");
-allBtn.addEventListener("click", () => {
-  showAll();
-  removeFiltersActive();
-  allBtn.classList.add("filter__btn--active");
-});
-
-const completedBtn = document.querySelector("#completedTasks");
-completedBtn.addEventListener("click", () => showOnlyCompleted());
-
-const showOnlyCompleted = () => {
-  showAll();
-  removeFiltersActive();
-  completedBtn.classList.add("filter__btn--active");
-  const notCompleted = allTaskRef.querySelectorAll(
-    ".task__status:not(.task__status--completed)"
-  );
-  notCompleted.forEach((task) => {
-    task.parentElement.classList.add("hidden");
-  });
-};
+loadFromLocalStorage(state);
+reloadAllTasks(state);
+addFiltersListener(state, reloadAllTasks);
