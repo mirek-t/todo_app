@@ -27,7 +27,7 @@ export const filterTasks = (evt, state, reloadAllTasks) => {
 
 export const addFiltersListener = (state, reloadAllTasks) => {
   filterBtnRef.forEach((fl) => {
-    fl.addEventListener("click", () => {
+    fl.addEventListener("click", (evt) => {
       filterTasks(evt, state, reloadAllTasks);
     });
   });

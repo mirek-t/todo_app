@@ -7,41 +7,22 @@ import {
 } from "./refs.js";
 import { loadFromLocalStorage, saveToLocalStorage } from "./storage.js";
 import getNextId from "./helpers.js";
-import { addFiltersListener } from "./filters.js";
+import {
+  addFiltersListener,
+  filterTasks,
+  removeFilterActive,
+} from "./filters.js";
+import { createTag } from "./generateHTML.js";
 
 const state = [];
 
-const createHTMLTask = (task) => {
-  const taskClone = taskCloneRef.cloneNode(true);
-
-  const taskStatus = taskClone.querySelector(".task__status");
-  const taskTitle = taskClone.querySelector(".task__title");
-  const taskRemove = taskClone.querySelector(".task__removeIcon");
-
-  if (task.status === false) {
-    taskStatus.classList.add("task__status--completed");
-  }
-
-  taskStatus.addEventListener("click", () => changeStatus(task.id, state));
-  taskRemove.addEventListener("click", () => removeTask(task.id, state));
-
-  taskTitle.innerText = task.title;
-
-  taskClone.classList.remove("hidden");
-  taskClone.classList.remove("clone");
-
-  return taskClone;
-};
-
 const reloadAllTasks = (tasks, commit = true) => {
-  allTasksRef.querySelectorAll(".task").forEach((t) => t.remove());
-
-  calculateLeftItems(state);
+  document.querySelectorAll(".task").forEach((t) => t.remove());
+  // calculateLeftItems(state);
   tasks.forEach((task) => {
-    const html = createHTMLTask(task);
-    allTasksRef.appendChild(html);
+    const html = createTask(task);
+    document.querySelector(".tasks__list").appendChild(html);
   });
-
   if (commit) {
     saveToLocalStorage(tasks);
   }
@@ -70,7 +51,7 @@ function calculateLeftItems(data) {
   counterRef.innerText = `${notCompleted.length} items left`;
 }
 
-inputRef.addEventListener("keyup", (evt) => {
+const handleInput = (evt) => {
   evt.preventDefault();
 
   if (evt.key === "Enter") {
@@ -84,8 +65,114 @@ inputRef.addEventListener("keyup", (evt) => {
 
     evt.target.value = "";
   }
-});
+};
 
 loadFromLocalStorage(state);
-reloadAllTasks(state);
-addFiltersListener(state, reloadAllTasks);
+
+function createTask({ title, status, id }) {
+  const li = createTag({
+    tagName: "li",
+    clsName: ["tasks__item", "task"],
+  });
+
+  const statusTag = createTag({
+    tagName: "span",
+    clsName: status
+      ? ["task__status"]
+      : ["task__status", "task__status--completed"],
+    evt: { type: "click", cb: () => changeStatus(id, state) },
+  });
+
+  li.appendChild(statusTag);
+
+  const titleTag = createTag({
+    tagName: "span",
+    clsName: ["task__title"],
+    text: title,
+  });
+
+  li.appendChild(titleTag);
+
+  const removeTag = createTag({
+    tagName: "span",
+    clsName: ["task__removeIcon"],
+    evt: { type: "click", cb: () => removeTask(id, state) },
+  });
+
+  li.appendChild(removeTag);
+
+  return li;
+}
+
+const createFilterNav = () => {
+  const nav = createTag({
+    tagName: "nav",
+    clsName: ["tasks__filter", "filter"],
+  });
+
+  const counter = createTag({
+    tagName: "span",
+    clsName: ["filter__counter"],
+    idName: "counterTasks",
+  });
+
+  nav.appendChild(counter);
+
+  ["all", "active", "completed"].forEach((item, id) => {
+    nav.appendChild(
+      createTag({
+        tagName: "a",
+        clsName:
+          id === 0 ? ["filter__btn", "filter__btn--active"] : ["filter__btn"],
+        idName: `${item}Tasks`,
+        text: item,
+        evt: {
+          type: "click",
+          cb: (evt) => filterTasks(evt, state, reloadAllTasks),
+        },
+      })
+    );
+  });
+
+  return nav;
+};
+
+const createInterface = () => {
+  const wrapper = createTag({
+    clsName: ["tasks"],
+  });
+
+  const label = createTag({
+    tagName: "label",
+    clsName: ["tasks__lbl"],
+    attrs: [{ name: "for", value: "task" }],
+    text: "Todos",
+  });
+
+  wrapper.appendChild(label);
+  const input = createTag({
+    tagName: "input",
+    clsName: ["tasks__input"],
+    idName: "task",
+    attrs: [{ name: "type", value: "text" }],
+    evt: { type: "keyup", cb: handleInput },
+  });
+
+  wrapper.appendChild(input);
+
+  const list = createTag({
+    tagName: "ul",
+    clsName: ["tasks__list"],
+  });
+
+  state.forEach((task) => {
+    list.appendChild(createTask(task));
+  });
+
+  wrapper.appendChild(list);
+  wrapper.appendChild(createFilterNav());
+
+  return wrapper;
+};
+
+document.body.appendChild(createInterface());
