@@ -1,9 +1,12 @@
-const getNextId = (data) => {
-  if (data.length === 0) {
+import { getState } from "./state.js";
+
+const getNextId = () => {
+  const state = getState();
+  if (state.length === 0) {
     return 1;
   }
 
-  return data[data.length - 1].id + 1;
+  return state[state.length - 1].id + 1;
 };
 
 export default getNextId;

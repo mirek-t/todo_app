@@ -1,4 +1,5 @@
 import { filterTasks } from "./filters.js";
+import { getState, calculateNotCompletedTasks } from "./state.js";
 
 const createTag = ({
   tagName = "div",
@@ -41,7 +42,7 @@ const createTag = ({
 
 export function createTask(
   { title, status, id },
-  state,
+
   changeStatus,
   removeTask
 ) {
@@ -55,7 +56,7 @@ export function createTask(
     clsName: status
       ? ["task__status"]
       : ["task__status", "task__status--completed"],
-    evt: { type: "click", cb: () => changeStatus(id, state) },
+    evt: { type: "click", cb: () => changeStatus(id) },
   });
 
   li.appendChild(statusTag);
@@ -71,7 +72,7 @@ export function createTask(
   const removeTag = createTag({
     tagName: "span",
     clsName: ["task__removeIcon"],
-    evt: { type: "click", cb: () => removeTask(id, state) },
+    evt: { type: "click", cb: () => removeTask(id) },
   });
 
   li.appendChild(removeTag);
@@ -79,7 +80,7 @@ export function createTask(
   return li;
 }
 
-const createFilterNav = (state, reloadAllTasks) => {
+const createFilterNav = (reloadAllTasks) => {
   const nav = createTag({
     tagName: "nav",
     clsName: ["tasks__filter", "filter"],
@@ -89,7 +90,7 @@ const createFilterNav = (state, reloadAllTasks) => {
     tagName: "span",
     clsName: ["filter__counter"],
     idName: "counterTasks",
-    text: `${state.filter((item) => item.status).length} items left`,
+    text: `${calculateNotCompletedTasks()} items left`,
   });
 
   nav.appendChild(counter);
@@ -104,7 +105,7 @@ const createFilterNav = (state, reloadAllTasks) => {
         text: item,
         evt: {
           type: "click",
-          cb: (evt) => filterTasks(evt, state, nav, reloadAllTasks),
+          cb: (evt) => filterTasks(evt, nav, reloadAllTasks),
         },
       })
     );
@@ -114,7 +115,6 @@ const createFilterNav = (state, reloadAllTasks) => {
 };
 
 export const createInterface = (
-  state,
   handleInput,
   changeStatus,
   removeTask,
@@ -147,12 +147,12 @@ export const createInterface = (
     clsName: ["tasks__list"],
   });
 
-  state.forEach((task) => {
-    list.appendChild(createTask(task, state, changeStatus, removeTask));
+  getState().forEach((task) => {
+    list.appendChild(createTask(task, changeStatus, removeTask));
   });
 
   wrapper.appendChild(list);
-  wrapper.appendChild(createFilterNav(state, reloadAllTasks));
+  wrapper.appendChild(createFilterNav(reloadAllTasks));
 
   return wrapper;
 };
