@@ -128,7 +128,7 @@ export const createInterface = (
     tagName: "label",
     clsName: ["tasks__lbl"],
     attrs: [{ name: "for", value: "task" }],
-    text: "Todos",
+    text: "todos",
   });
 
   wrapper.appendChild(label);
